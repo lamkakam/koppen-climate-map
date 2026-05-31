@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { ReactNode } from 'react';
 import { vi } from 'vitest';
@@ -6,9 +6,15 @@ import { vi } from 'vitest';
 import { App } from './App';
 
 type TileLayerProps = {
+  readonly id?: string;
   readonly data?: string;
+  readonly minZoom?: number;
+  readonly maxZoom?: number;
+  readonly tileSize?: number;
+  readonly opacity?: number;
   readonly updateTriggers?: {
     readonly visibleClassIds?: string;
+    readonly opacity?: number;
   };
 };
 
@@ -107,6 +113,31 @@ describe('App', () => {
     expect(screen.getByRole('main')).toBeInTheDocument();
     expect(screen.getByRole('region', { name: /koppen climate raster map/i })).toBeVisible();
     expect(screen.getByRole('group', { name: /koppen climate classes/i })).toBeVisible();
+    expect(screen.getByRole('slider', { name: /openstreetmap opacity/i })).toHaveValue('100');
+    expect(screen.getByRole('slider', { name: /koppen opacity/i })).toHaveValue('75');
+    expect(screen.getByRole('link', { name: /openstreetmap contributors/i })).toHaveAttribute(
+      'href',
+      'https://www.openstreetmap.org/copyright',
+    );
+  });
+
+  it('creates OpenStreetMap and Koppen tile layers in draw order', () => {
+    render(<App />);
+
+    expect(tileLayerProps).toHaveLength(2);
+    expect(tileLayerProps[0]).toMatchObject({
+      id: 'openstreetmap-base-tiles',
+      data: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+      minZoom: 0,
+      maxZoom: 19,
+      tileSize: 256,
+      opacity: 1,
+    });
+    expect(tileLayerProps[1]).toMatchObject({
+      id: 'koppen-climate-tiles',
+      data: '/tiles/koppen/1991_2020/{z}/{x}/{y}.png',
+      opacity: 0.75,
+    });
   });
 
   it('renders every Koppen class checkbox', () => {
@@ -162,11 +193,41 @@ describe('App', () => {
     expect(
       tileLayerProps
         .map((props) => props.data)
-        .every((tileUrl) => tileUrl === '/tiles/koppen/1991_2020/{z}/{x}/{y}.png'),
+        .filter((tileUrl) => tileUrl === '/tiles/koppen/1991_2020/{z}/{x}/{y}.png'),
+    ).toHaveLength(2);
+    expect(
+      tileLayerProps
+        .filter((props) => props.id === 'koppen-climate-tiles')
+        .every((props) => props.data === '/tiles/koppen/1991_2020/{z}/{x}/{y}.png'),
     ).toBe(true);
     expect(new Set(tileLayerProps.map((props) => props.data))).toEqual(new Set(initialTileUrls));
     expect(tileLayerProps.at(-1)?.updateTriggers?.visibleClassIds).not.toBe(
-      tileLayerProps.at(0)?.updateTriggers?.visibleClassIds,
+      tileLayerProps[1]?.updateTriggers?.visibleClassIds,
     );
+  });
+
+  it('updates layer opacity without changing tile URLs', () => {
+    const { rerender } = render(<App />);
+    const initialTileUrls = tileLayerProps.map((props) => props.data);
+
+    fireEvent.change(screen.getByRole('slider', { name: /openstreetmap opacity/i }), {
+      target: { value: '40' },
+    });
+    fireEvent.change(screen.getByRole('slider', { name: /koppen opacity/i }), {
+      target: { value: '20' },
+    });
+    rerender(<App />);
+
+    expect(screen.getByRole('slider', { name: /openstreetmap opacity/i })).toHaveValue('40');
+    expect(screen.getByRole('slider', { name: /koppen opacity/i })).toHaveValue('20');
+    expect(tileLayerProps.at(-2)).toMatchObject({
+      data: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+      opacity: 0.4,
+    });
+    expect(tileLayerProps.at(-1)).toMatchObject({
+      data: '/tiles/koppen/1991_2020/{z}/{x}/{y}.png',
+      opacity: 0.2,
+    });
+    expect(new Set(tileLayerProps.map((props) => props.data))).toEqual(new Set(initialTileUrls));
   });
 });

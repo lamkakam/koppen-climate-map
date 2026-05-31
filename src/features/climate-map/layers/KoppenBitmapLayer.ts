@@ -5,6 +5,7 @@ import { koppenClasses } from '../data/koppenClasses';
 
 type KoppenBitmapLayerExtraProps = {
   readonly visibleClassIds: readonly number[];
+  readonly koppenOpacity: number;
 };
 
 type ShaderMap = {
@@ -21,15 +22,17 @@ const koppenUniforms = {
   name: 'koppen',
   fs: `\
 layout(std140) uniform koppenUniforms {
+  float opacity;
 ${uniformNames.join('\n')}
 } koppen;
 `,
-  uniformTypes: Object.fromEntries(
-    koppenClasses.flatMap((koppenClass) => [
+  uniformTypes: Object.fromEntries([
+    ['opacity', 'f32'],
+    ...koppenClasses.flatMap((koppenClass) => [
       [`color${koppenClass.id}`, 'vec4<f32>'],
       [`visible${koppenClass.id}`, 'f32'],
     ]),
-  ),
+  ]),
 };
 
 const classBranches = koppenClasses
@@ -57,21 +60,24 @@ ${classBranches}
     discard;
   }
 
-  color = vec4(koppenColor.rgb, color.a);
+  color = vec4(koppenColor.rgb, color.a * koppen.opacity);
 `;
 
-function createKoppenUniformProps(visibleClassIds: readonly number[]) {
+function createKoppenUniformProps(visibleClassIds: readonly number[], koppenOpacity: number) {
   const visibleClassIdSet = new Set(visibleClassIds);
 
   return Object.fromEntries(
-    koppenClasses.flatMap((koppenClass) => {
-      const [red, green, blue] = koppenClass.color;
+    [
+      ['opacity', koppenOpacity],
+      ...koppenClasses.flatMap((koppenClass) => {
+        const [red, green, blue] = koppenClass.color;
 
-      return [
-        [`color${koppenClass.id}`, [red / 255, green / 255, blue / 255, 1]],
-        [`visible${koppenClass.id}`, visibleClassIdSet.has(koppenClass.id) ? 1 : 0],
-      ];
-    }),
+        return [
+          [`color${koppenClass.id}`, [red / 255, green / 255, blue / 255, 1]],
+          [`visible${koppenClass.id}`, visibleClassIdSet.has(koppenClass.id) ? 1 : 0],
+        ];
+      }),
+    ],
   );
 }
 
@@ -93,7 +99,7 @@ export class KoppenBitmapLayer extends BitmapLayer<KoppenBitmapLayerExtraProps> 
 
   draw(opts: Parameters<BitmapLayer<KoppenBitmapLayerExtraProps>['draw']>[0]): void {
     this.state.model?.shaderInputs.setProps({
-      koppen: createKoppenUniformProps(this.props.visibleClassIds),
+      koppen: createKoppenUniformProps(this.props.visibleClassIds, this.props.koppenOpacity),
     });
 
     super.draw(opts);

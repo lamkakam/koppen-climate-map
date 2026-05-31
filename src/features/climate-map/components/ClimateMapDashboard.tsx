@@ -5,6 +5,7 @@ import { useMemo, useState } from 'react';
 
 import { koppenClassIds } from '../data/koppenClasses';
 import { KOPPEN_MIN_ZOOM, createKoppenTileLayer } from '../layers/KoppenTileLayer';
+import { createOpenStreetMapTileLayer } from '../layers/OpenStreetMapTileLayer';
 import { LayerControls } from './LayerControls';
 
 const maxInteractionZoom = 12;
@@ -35,11 +36,16 @@ export function ClimateMapDashboard() {
   const [visibleClassIds, setVisibleClassIds] = useState<ReadonlySet<number>>(
     () => new Set(koppenClassIds),
   );
+  const [osmOpacity, setOsmOpacity] = useState(1);
+  const [koppenOpacity, setKoppenOpacity] = useState(0.75);
 
   const visibleClassIdList = useMemo(() => [...visibleClassIds], [visibleClassIds]);
   const layers = useMemo(
-    () => [createKoppenTileLayer({ visibleClassIds: visibleClassIdList })],
-    [visibleClassIdList],
+    () => [
+      createOpenStreetMapTileLayer({ opacity: osmOpacity }),
+      createKoppenTileLayer({ visibleClassIds: visibleClassIdList, opacity: koppenOpacity }),
+    ],
+    [koppenOpacity, osmOpacity, visibleClassIdList],
   );
 
   return (
@@ -60,6 +66,10 @@ export function ClimateMapDashboard() {
       <div className="pointer-events-none absolute left-4 top-4 z-10">
         <LayerControls
           visibleClassIds={visibleClassIds}
+          osmOpacity={osmOpacity}
+          koppenOpacity={koppenOpacity}
+          onOsmOpacityChange={setOsmOpacity}
+          onKoppenOpacityChange={setKoppenOpacity}
           onHideAll={() => {
             setVisibleClassIds(new Set());
           }}
@@ -81,6 +91,13 @@ export function ClimateMapDashboard() {
           }}
         />
       </div>
+
+      <a
+        className="absolute bottom-3 right-3 z-10 rounded bg-white/95 px-2 py-1 text-xs font-medium text-canopy-900 shadow-panel underline decoration-canopy-900/40 underline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-canopy-700"
+        href="https://www.openstreetmap.org/copyright"
+      >
+        © OpenStreetMap contributors
+      </a>
     </section>
   );
 }
