@@ -2,6 +2,7 @@ import { expect, test } from '@playwright/test';
 
 test('loads the climate map workspace', async ({ page }) => {
   await page.goto('/');
+  await page.getByRole('button', { name: /acknowledge data license notice/i }).click();
 
   await expect(page.getByRole('region', { name: /koppen climate raster map/i })).toBeVisible();
   await expect(page.getByRole('group', { name: /koppen climate classes/i })).toBeVisible();

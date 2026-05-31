@@ -45,7 +45,60 @@ vi.mock('@deck.gl/layers', () => ({
 
 describe('App', () => {
   beforeEach(() => {
+    window.localStorage.clear();
     tileLayerProps.length = 0;
+  });
+
+  it('shows the data license notice when it has not been dismissed', () => {
+    render(<App />);
+
+    expect(
+      screen.getByRole('dialog', { name: /data license and attribution/i }),
+    ).toBeVisible();
+    expect(
+      screen.getByText(/Creative Commons Attribution 4\.0 International license/i),
+    ).toBeVisible();
+  });
+
+  it('renders the license and citation links with the correct URLs', () => {
+    render(<App />);
+
+    expect(screen.getByRole('link', { name: 'CC BY 4.0' })).toHaveAttribute(
+      'href',
+      'https://creativecommons.org/licenses/by/4.0/',
+    );
+    expect(
+      screen.getByRole('link', {
+        name: 'High-resolution (1 km) Köppen-Geiger maps for 1901-2099 based on constrained CMIP6 projections',
+      }),
+    ).toHaveAttribute('href', 'https://www.nature.com/articles/s41597-023-02549-6');
+  });
+
+  it('dismisses the data license notice and stores the acknowledgement', async () => {
+    const user = userEvent.setup();
+
+    render(<App />);
+
+    await user.click(
+      screen.getByRole('button', { name: /acknowledge data license notice/i }),
+    );
+
+    expect(
+      screen.queryByRole('dialog', { name: /data license and attribution/i }),
+    ).not.toBeInTheDocument();
+    expect(
+      window.localStorage.getItem('koppenClimateMap.dataLicenseNoticeDismissed'),
+    ).toBe('true');
+  });
+
+  it('does not show the data license notice after it has been dismissed', () => {
+    window.localStorage.setItem('koppenClimateMap.dataLicenseNoticeDismissed', 'true');
+
+    render(<App />);
+
+    expect(
+      screen.queryByRole('dialog', { name: /data license and attribution/i }),
+    ).not.toBeInTheDocument();
   });
 
   it('renders the fullscreen climate map and controls', () => {
