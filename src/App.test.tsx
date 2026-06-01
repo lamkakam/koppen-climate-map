@@ -167,7 +167,8 @@ describe('App', () => {
 
     await user.click(screen.getAllByRole('button', { name: /collapse layer controls/i })[0]);
 
-    expect(screen.queryByRole('group', { name: /koppen climate classes/i })).not.toBeInTheDocument();
+    expect(screen.getByTestId('koppen-class-list')).toHaveAttribute('aria-hidden', 'true');
+    expect(screen.getByTestId('koppen-class-list')).toHaveClass('max-h-0', 'opacity-0');
     expect(screen.getAllByRole('link', { name: /openstreetmap contributors/i })[0]).toHaveAttribute(
       'href',
       'https://www.openstreetmap.org/copyright',
@@ -178,7 +179,26 @@ describe('App', () => {
     expect(screen.getByRole('checkbox', { name: /Af tropical rainforest/i })).not.toBeChecked();
   });
 
-  it('uses consistently sized chevrons on large screens', async () => {
+  it('animates the layer controls panel collapse state', async () => {
+    const user = userEvent.setup();
+
+    render(<App />);
+
+    const panel = screen.getByTestId('layer-controls-panel');
+    expect(panel).toHaveClass(
+      'transition-[max-height,opacity]',
+      'duration-200',
+      'ease-standard',
+      'will-change-[max-height,opacity]',
+      'opacity-100',
+    );
+
+    await user.click(screen.getAllByRole('button', { name: /collapse layer controls/i })[0]);
+
+    expect(panel).toHaveClass('max-h-0', 'opacity-0');
+  });
+
+  it('animates consistently sized chevrons while toggling rotation classes', async () => {
     const user = userEvent.setup();
 
     render(<App />);
@@ -187,7 +207,18 @@ describe('App', () => {
       name: /collapse layer controls/i,
     })[0];
     expect(within(collapseButton).getByTestId('desktop-layer-controls-chevron')).toHaveClass(
+      'transition-transform',
+      'duration-200',
+      'ease-standard',
+      'will-change-transform',
       '-rotate-[135deg]',
+    );
+    expect(screen.getByTestId('mobile-layer-controls-chevron')).toHaveClass(
+      'transition-transform',
+      'duration-200',
+      'ease-standard',
+      'will-change-transform',
+      'rotate-45',
     );
 
     await user.click(collapseButton);
@@ -197,8 +228,13 @@ describe('App', () => {
         'desktop-layer-controls-chevron',
       ),
     ).toHaveClass(
+      'transition-transform',
+      'duration-200',
+      'ease-standard',
+      'will-change-transform',
       'rotate-45',
     );
+    expect(screen.getByTestId('mobile-layer-controls-chevron')).toHaveClass('-rotate-[135deg]');
   });
 
   it('keeps descriptions in checkbox names while compacting visible mobile class text', () => {
