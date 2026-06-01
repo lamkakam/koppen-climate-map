@@ -21,4 +21,6 @@ Playwright uses Vite on `127.0.0.1:5174` with a strict port to avoid reusing ano
 
 ## Climate Tiles
 
-The client map loads XYZ PNG tiles from `public/tiles/koppen/1991_2020/{z}/{x}/{y}.png`, served at `/tiles/koppen/1991_2020/{z}/{x}/{y}.png`. Each pixel's red channel is the Koppen class ID; class `0` is transparent no-data. Filtering classes updates deck.gl shader uniforms only, so the tile URL remains stable and tiles are not re-fetched for checklist changes.
+The client map loads public OpenStreetMap XYZ PNG tiles from `https://tile.openstreetmap.org/{z}/{x}/{y}.png` as the base layer. Keep the OpenStreetMap attribution visible in the map viewport and linked to `https://www.openstreetmap.org/copyright`. Public tile usage must follow the OpenStreetMap tile policy: https://operations.osmfoundation.org/policies/tiles/
+
+The Koppen overlay loads XYZ PNG tiles from `public/tiles/koppen/1991_2020/{z}/{x}/{y}.png`, served at `/tiles/koppen/1991_2020/{z}/{x}/{y}.png`. Each pixel's red channel is the Koppen class ID; class `0` is transparent no-data. Filtering classes updates deck.gl shader uniforms only, so the tile URL remains stable and tiles are not re-fetched for checklist changes.

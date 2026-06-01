@@ -1,11 +1,10 @@
 import { TileLayer } from '@deck.gl/geo-layers';
 import type { TileLayerProps } from '@deck.gl/geo-layers';
+import { BitmapLayer } from '@deck.gl/layers';
 
-import { KoppenBitmapLayer } from './KoppenBitmapLayer';
-
-export const KOPPEN_TILE_URL = '/tiles/koppen/1991_2020/{z}/{x}/{y}.png';
-export const KOPPEN_MIN_ZOOM = 0;
-export const KOPPEN_MAX_ZOOM = 8;
+export const OPENSTREETMAP_TILE_URL = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
+export const OPENSTREETMAP_MIN_ZOOM = 0;
+export const OPENSTREETMAP_MAX_ZOOM = 19;
 
 type TileImage = HTMLImageElement | ImageBitmap;
 
@@ -16,17 +15,9 @@ type GeoBoundingBox = {
   readonly north: number;
 };
 
-type KoppenTileLayerOptions = {
-  readonly visibleClassIds: readonly number[];
+type OpenStreetMapTileLayerOptions = {
   readonly opacity: number;
 };
-
-const textureParameters = {
-  minFilter: 'nearest',
-  magFilter: 'nearest',
-  addressModeU: 'clamp-to-edge',
-  addressModeV: 'clamp-to-edge',
-} as const;
 
 function isGeoBoundingBox(value: unknown): value is GeoBoundingBox {
   return (
@@ -40,36 +31,31 @@ function isGeoBoundingBox(value: unknown): value is GeoBoundingBox {
   );
 }
 
-export function createKoppenTileLayer({ visibleClassIds, opacity }: KoppenTileLayerOptions) {
-  const visibleClassKey = visibleClassIds.join(',');
-
+export function createOpenStreetMapTileLayer({ opacity }: OpenStreetMapTileLayerOptions) {
   return new TileLayer<TileImage>({
-    id: 'koppen-climate-tiles',
-    data: KOPPEN_TILE_URL,
-    minZoom: KOPPEN_MIN_ZOOM,
-    maxZoom: KOPPEN_MAX_ZOOM,
+    id: 'openstreetmap-base-tiles',
+    data: OPENSTREETMAP_TILE_URL,
+    minZoom: OPENSTREETMAP_MIN_ZOOM,
+    maxZoom: OPENSTREETMAP_MAX_ZOOM,
     tileSize: 256,
     opacity,
     refinementStrategy: 'best-available',
+    onTileError: () => undefined,
     updateTriggers: {
-      visibleClassIds: visibleClassKey,
       opacity,
     },
     renderSubLayers: (props) => {
       const { bbox } = props.tile;
 
       if (!isGeoBoundingBox(bbox)) {
-        return null;
+        return undefined;
       }
 
-      return new KoppenBitmapLayer({
+      return new BitmapLayer({
         id: props.id,
         image: props.data,
         bounds: [bbox.west, bbox.south, bbox.east, bbox.north],
-        textureParameters,
-        visibleClassIds,
-        koppenOpacity: opacity,
-        opacity: 1,
+        opacity,
         pickable: false,
       });
     },
