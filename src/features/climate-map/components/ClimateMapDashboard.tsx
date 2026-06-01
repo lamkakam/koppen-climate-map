@@ -63,7 +63,7 @@ export function ClimateMapDashboard() {
         }}
       />
 
-      <div className="pointer-events-none absolute left-4 top-4 z-10">
+      <div className="pointer-events-none absolute inset-x-0 bottom-10 z-10 lg:bottom-auto lg:left-4 lg:right-auto lg:top-4">
         <LayerControls
           visibleClassIds={visibleClassIds}
           osmOpacity={osmOpacity}
@@ -93,10 +93,10 @@ export function ClimateMapDashboard() {
       </div>
 
       <a
-        className="absolute bottom-3 right-3 z-10 rounded bg-white/95 px-2 py-1 text-xs font-medium text-canopy-900 shadow-panel underline decoration-canopy-900/40 underline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-canopy-700"
+        className="pointer-events-auto absolute bottom-3 right-3 z-10 hidden rounded bg-white/95 px-2 py-1 text-xs font-medium text-canopy-900 shadow-panel underline decoration-canopy-900/40 underline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-canopy-700 lg:block"
         href="https://www.openstreetmap.org/copyright"
       >
-        © OpenStreetMap contributors
+        © OpenStreetMap Contributors
       </a>
     </section>
   );

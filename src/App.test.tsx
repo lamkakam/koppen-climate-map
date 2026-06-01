@@ -112,10 +112,11 @@ describe('App', () => {
 
     expect(screen.getByRole('main')).toBeInTheDocument();
     expect(screen.getByRole('region', { name: /koppen climate raster map/i })).toBeVisible();
+    expect(screen.getByRole('complementary', { name: /layer controls/i })).toBeVisible();
     expect(screen.getByRole('group', { name: /koppen climate classes/i })).toBeVisible();
     expect(screen.getByRole('slider', { name: /openstreetmap opacity/i })).toHaveValue('100');
     expect(screen.getByRole('slider', { name: /koppen opacity/i })).toHaveValue('75');
-    expect(screen.getByRole('link', { name: /openstreetmap contributors/i })).toHaveAttribute(
+    expect(screen.getAllByRole('link', { name: /openstreetmap contributors/i })[0]).toHaveAttribute(
       'href',
       'https://www.openstreetmap.org/copyright',
     );
@@ -146,6 +147,69 @@ describe('App', () => {
     expect(screen.getAllByRole('checkbox')).toHaveLength(30);
     expect(screen.getByRole('checkbox', { name: /Af tropical rainforest/i })).toBeChecked();
     expect(screen.getByRole('checkbox', { name: /EF ice cap/i })).toBeChecked();
+  });
+
+  it('collapses and expands layer controls without changing class selection', async () => {
+    const user = userEvent.setup();
+
+    render(<App />);
+
+    const tropicalRainforestCheckbox = screen.getByRole('checkbox', {
+      name: /Af tropical rainforest/i,
+    });
+    await user.click(tropicalRainforestCheckbox);
+    expect(tropicalRainforestCheckbox).not.toBeChecked();
+
+    await user.click(screen.getAllByRole('button', { name: /collapse layer controls/i })[0]);
+
+    expect(screen.queryByRole('group', { name: /koppen climate classes/i })).not.toBeInTheDocument();
+    expect(screen.getAllByRole('link', { name: /openstreetmap contributors/i })[0]).toHaveAttribute(
+      'href',
+      'https://www.openstreetmap.org/copyright',
+    );
+
+    await user.click(screen.getAllByRole('button', { name: /expand layer controls/i })[0]);
+
+    expect(screen.getByRole('checkbox', { name: /Af tropical rainforest/i })).not.toBeChecked();
+  });
+
+  it('uses vertical collapse arrows on large screens', async () => {
+    const user = userEvent.setup();
+
+    render(<App />);
+
+    const collapseButton = screen.getAllByRole('button', {
+      name: /collapse layer controls/i,
+    })[0];
+    expect(collapseButton).toHaveTextContent('⌃');
+
+    await user.click(collapseButton);
+
+    expect(screen.getAllByRole('button', { name: /expand layer controls/i })[0]).toHaveTextContent(
+      '⌄',
+    );
+  });
+
+  it('keeps descriptions in checkbox names while compacting visible mobile class text', () => {
+    render(<App />);
+
+    expect(screen.getByRole('checkbox', { name: /Af tropical rainforest/i })).toBeChecked();
+    expect(screen.getByText('Tropical rainforest')).toHaveClass('hidden');
+  });
+
+  it('does not show class description tooltips from focus or touch interaction', () => {
+    render(<App />);
+
+    const tropicalRainforestCheckbox = screen.getByRole('checkbox', {
+      name: /Af tropical rainforest/i,
+    });
+    fireEvent.focus(tropicalRainforestCheckbox);
+
+    expect(screen.queryByRole('tooltip', { name: /tropical rainforest/i })).not.toBeInTheDocument();
+
+    fireEvent.pointerDown(screen.getByText('Af'), { pointerType: 'touch' });
+
+    expect(screen.queryByRole('tooltip', { name: /tropical rainforest/i })).not.toBeInTheDocument();
   });
 
   it('shows and hides all climate classes', async () => {
