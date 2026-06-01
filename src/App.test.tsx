@@ -178,7 +178,7 @@ describe('App', () => {
     expect(screen.getByRole('checkbox', { name: /Af tropical rainforest/i })).not.toBeChecked();
   });
 
-  it('uses vertical collapse arrows on large screens', async () => {
+  it('uses consistently sized chevrons on large screens', async () => {
     const user = userEvent.setup();
 
     render(<App />);
@@ -186,12 +186,18 @@ describe('App', () => {
     const collapseButton = screen.getAllByRole('button', {
       name: /collapse layer controls/i,
     })[0];
-    expect(collapseButton).toHaveTextContent('⌃');
+    expect(within(collapseButton).getByTestId('desktop-layer-controls-chevron')).toHaveClass(
+      '-rotate-[135deg]',
+    );
 
     await user.click(collapseButton);
 
-    expect(screen.getAllByRole('button', { name: /expand layer controls/i })[0]).toHaveTextContent(
-      '⌄',
+    expect(
+      within(screen.getAllByRole('button', { name: /expand layer controls/i })[0]).getByTestId(
+        'desktop-layer-controls-chevron',
+      ),
+    ).toHaveClass(
+      'rotate-45',
     );
   });
 

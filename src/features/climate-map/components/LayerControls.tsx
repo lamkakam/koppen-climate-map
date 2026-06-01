@@ -46,7 +46,13 @@ export function LayerControls({
                 setIsExpanded((currentIsExpanded) => !currentIsExpanded);
               }}
             >
-              {isExpanded ? '⌃' : '⌄'}
+              <span
+                aria-hidden="true"
+                className={`h-2 w-2 border-b-2 border-r-2 border-current ${
+                  isExpanded ? '-rotate-[135deg]' : 'rotate-45'
+                }`}
+                data-testid="desktop-layer-controls-chevron"
+              />
             </button>
           </div>
           {isExpanded ? (
@@ -172,7 +178,13 @@ export function LayerControls({
           setIsExpanded((currentIsExpanded) => !currentIsExpanded);
         }}
       >
-        {isExpanded ? '⌄' : '⌃'}
+        <span
+          aria-hidden="true"
+          className={`h-2 w-2 border-b-2 border-r-2 border-current ${
+            isExpanded ? 'rotate-45' : '-rotate-[135deg]'
+          }`}
+          data-testid="mobile-layer-controls-chevron"
+        />
       </button>
       <a
         className="absolute bottom-0 left-[calc(50%+2.25rem)] right-2 flex min-h-9 translate-y-full items-center rounded bg-white/95 px-2 text-xs font-medium leading-tight text-canopy-900 shadow-panel underline decoration-canopy-900/40 underline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-canopy-700 lg:hidden"

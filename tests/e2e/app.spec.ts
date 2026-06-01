@@ -50,7 +50,9 @@ test('keeps desktop layer controls expanded in the upper-left with attribution b
   await expect(controls).toBeVisible();
   await expect(page.getByRole('group', { name: /koppen climate classes/i })).toBeVisible();
   await expect(attribution).toHaveAttribute('href', 'https://www.openstreetmap.org/copyright');
-  await expect(collapseButton).toHaveText('⌃');
+  await expect(collapseButton.getByTestId('desktop-layer-controls-chevron')).toHaveClass(
+    /-rotate-\[135deg\]/,
+  );
 
   const controlsBox = await controls.boundingBox();
   const attributionBox = await attribution.boundingBox();
@@ -60,7 +62,11 @@ test('keeps desktop layer controls expanded in the upper-left with attribution b
   expect(attributionBox?.y).toBeGreaterThan(740);
 
   await collapseButton.click();
-  await expect(page.getByRole('button', { name: /expand layer controls/i })).toHaveText('⌄');
+  await expect(
+    page
+      .getByRole('button', { name: /expand layer controls/i })
+      .getByTestId('desktop-layer-controls-chevron'),
+  ).toHaveClass(/rotate-45/);
   await expect(attribution).toBeVisible();
 });
 
