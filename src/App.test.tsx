@@ -1,4 +1,9 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import {
+  fireEvent,
+  render,
+  screen,
+  within,
+} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { ReactNode } from 'react';
 import { vi } from 'vitest';
@@ -195,6 +200,23 @@ describe('App', () => {
 
     expect(screen.getByRole('checkbox', { name: /Af tropical rainforest/i })).toBeChecked();
     expect(screen.getByText('Tropical rainforest')).toHaveClass('hidden');
+  });
+
+  it('optically aligns visible class codes with their descriptions', () => {
+    render(<App />);
+
+    const tropicalRainforestControl = screen.getByTestId('koppen-class-1-control');
+    const classCode = within(tropicalRainforestControl).getByText('Af');
+    const classDescription = within(tropicalRainforestControl).getByText('Tropical rainforest');
+
+    expect(classCode).toHaveClass(
+      'inline-flex',
+      'h-5',
+      'translate-y-px',
+      'items-center',
+      'leading-none',
+    );
+    expect(classDescription).toHaveClass('leading-5');
   });
 
   it('does not show class description tooltips from focus or touch interaction', () => {

@@ -151,7 +151,7 @@ export function LayerControls({
                     className="h-4 w-4 shrink-0 rounded-sm border border-black/10"
                     style={{ backgroundColor: `rgb(${red} ${green} ${blue})` }}
                   />
-                  <span className="shrink-0 font-mono text-sm font-semibold lg:w-10">
+                  <span className="inline-flex h-5 shrink-0 translate-y-px items-center font-mono text-sm font-semibold leading-none lg:w-10">
                     {koppenClass.code}
                   </span>
                   <span className="hidden min-w-0 flex-1 leading-5 lg:block">
