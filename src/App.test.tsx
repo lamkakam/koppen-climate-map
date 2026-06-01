@@ -114,7 +114,7 @@ describe('App', () => {
     expect(screen.getByRole('region', { name: /koppen climate raster map/i })).toBeVisible();
     expect(screen.getByRole('complementary', { name: /layer controls/i })).toBeVisible();
     expect(screen.getByRole('group', { name: /koppen climate classes/i })).toBeVisible();
-    expect(screen.getByRole('slider', { name: /openstreetmap opacity/i })).toHaveValue('100');
+    expect(screen.getByRole('slider', { name: /map opacity/i })).toHaveValue('100');
     expect(screen.getByRole('slider', { name: /koppen opacity/i })).toHaveValue('75');
     expect(screen.getAllByRole('link', { name: /openstreetmap contributors/i })[0]).toHaveAttribute(
       'href',
@@ -274,7 +274,7 @@ describe('App', () => {
     const { rerender } = render(<App />);
     const initialTileUrls = tileLayerProps.map((props) => props.data);
 
-    fireEvent.change(screen.getByRole('slider', { name: /openstreetmap opacity/i }), {
+    fireEvent.change(screen.getByRole('slider', { name: /map opacity/i }), {
       target: { value: '40' },
     });
     fireEvent.change(screen.getByRole('slider', { name: /koppen opacity/i }), {
@@ -282,7 +282,7 @@ describe('App', () => {
     });
     rerender(<App />);
 
-    expect(screen.getByRole('slider', { name: /openstreetmap opacity/i })).toHaveValue('40');
+    expect(screen.getByRole('slider', { name: /map opacity/i })).toHaveValue('40');
     expect(screen.getByRole('slider', { name: /koppen opacity/i })).toHaveValue('20');
     expect(tileLayerProps.at(-2)).toMatchObject({
       data: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',

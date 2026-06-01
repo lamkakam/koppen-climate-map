@@ -7,7 +7,7 @@ test('loads the climate map workspace', async ({ page }) => {
   await expect(page.getByRole('region', { name: /koppen climate raster map/i })).toBeVisible();
   await expect(page.getByRole('complementary', { name: /layer controls/i })).toBeVisible();
   await expect(page.getByRole('group', { name: /koppen climate classes/i })).toBeVisible();
-  await expect(page.getByRole('slider', { name: /openstreetmap opacity/i })).toHaveValue('100');
+  await expect(page.getByRole('slider', { name: /map opacity/i })).toHaveValue('100');
   await expect(page.getByRole('slider', { name: /koppen opacity/i })).toHaveValue('75');
   await expect(page.getByRole('link', { name: /openstreetmap contributors/i })).toHaveAttribute(
     'href',
@@ -15,8 +15,8 @@ test('loads the climate map workspace', async ({ page }) => {
   );
   await expect(page.getByRole('checkbox')).toHaveCount(30);
 
-  await page.getByRole('slider', { name: /openstreetmap opacity/i }).fill('45');
-  await expect(page.getByRole('slider', { name: /openstreetmap opacity/i })).toHaveValue('45');
+  await page.getByRole('slider', { name: /map opacity/i }).fill('45');
+  await expect(page.getByRole('slider', { name: /map opacity/i })).toHaveValue('45');
   await page.getByRole('slider', { name: /koppen opacity/i }).fill('55');
   await expect(page.getByRole('slider', { name: /koppen opacity/i })).toHaveValue('55');
 
@@ -72,7 +72,10 @@ test('uses compact lower-half mobile layer controls', async ({ page }) => {
   const controls = page.getByRole('complementary', { name: /layer controls/i });
   const attribution = page.getByRole('link', { name: /openstreetmap contributors/i });
   const tropicalRainforestDescription = page.getByText('Tropical rainforest');
-  const firstRowControls = page.getByTestId('koppen-class-list').getByRole('checkbox');
+  const classList = page.getByTestId('koppen-class-list');
+  const firstRowControls = classList.getByRole('checkbox');
+  const showAllButton = page.getByRole('button', { name: /show all/i });
+  const hideAllButton = page.getByRole('button', { name: /hide all/i });
 
   await expect(controls).toBeVisible();
   await expect(attribution).toBeVisible();
@@ -82,6 +85,13 @@ test('uses compact lower-half mobile layer controls', async ({ page }) => {
   const attributionBox = await attribution.boundingBox();
   expect(controlsBox?.y).toBeGreaterThanOrEqual(844 / 2 - 24);
   expect(attributionBox?.x).toBeGreaterThan(220);
+
+  const classListBox = await classList.boundingBox();
+  const showAllButtonBox = await showAllButton.boundingBox();
+  const hideAllButtonBox = await hideAllButton.boundingBox();
+  expect(classListBox?.height).toBeGreaterThan(220);
+  expect(showAllButtonBox?.height).toBeLessThan(38);
+  expect(hideAllButtonBox?.height).toBeLessThan(38);
 
   const firstBox = await firstRowControls.nth(0).boundingBox();
   const secondBox = await firstRowControls.nth(1).boundingBox();
