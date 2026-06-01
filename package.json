@@ -20,6 +20,7 @@
     "@deck.gl/mesh-layers": "^9.3.2",
     "@deck.gl/react": "^9.3.2",
     "@deck.gl/widgets": "^9.3.2",
+    "fflate": "^0.8.3",
     "react": "latest",
     "react-dom": "latest"
   },
