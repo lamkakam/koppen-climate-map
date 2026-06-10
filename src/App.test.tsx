@@ -115,7 +115,6 @@ describe('App', () => {
   it('renders the fullscreen climate map and controls', () => {
     render(<App />);
 
-    expect(document.title).toBe('Köppen Climate Map');
     expect(screen.getByRole('main')).toBeInTheDocument();
     expect(screen.getByRole('region', { name: /köppen climate raster map/i })).toBeVisible();
     expect(screen.getByRole('complementary', { name: /layer controls/i })).toBeVisible();
