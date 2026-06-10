@@ -36,7 +36,7 @@ export function LayerControls({
       <div className="max-h-[calc(50vh-3rem)] overflow-hidden rounded-t-lg lg:max-h-[calc(100vh-2rem)] lg:rounded-lg">
         <div className="border-b border-canopy-100 px-4 py-2 lg:py-3">
           <div className="flex items-center justify-between gap-3">
-            <h1 className="text-base font-semibold text-canopy-900">Koppen climate map</h1>
+            <h1 className="text-base font-semibold text-canopy-900">Köppen climate map (1991-2020)</h1>
             <button
               aria-expanded={isExpanded}
               aria-label={toggleLabel}
