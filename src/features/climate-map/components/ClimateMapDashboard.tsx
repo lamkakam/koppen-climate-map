@@ -50,7 +50,7 @@ export function ClimateMapDashboard() {
 
   return (
     <section
-      aria-label="Koppen climate raster map"
+      aria-label="Köppen climate raster map"
       className="relative h-screen min-h-[32rem] overflow-hidden bg-[#d8e2dc]"
     >
       <DeckGL

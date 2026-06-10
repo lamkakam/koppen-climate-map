@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { ClimateMapDashboard } from './features/climate-map/components';
 import { AppShell } from './shared/components/layout';
@@ -10,6 +10,10 @@ export function App() {
   const [isDataLicenseNoticeOpen, setIsDataLicenseNoticeOpen] = useState(
     () => window.localStorage.getItem(dataLicenseNoticeStorageKey) !== 'true',
   );
+
+  useEffect(() => {
+    document.title = 'Köppen Climate Map';
+  }, []);
 
   function acknowledgeDataLicenseNotice() {
     window.localStorage.setItem(dataLicenseNoticeStorageKey, 'true');
