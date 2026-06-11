@@ -42,7 +42,7 @@ The COG is a generated local/deploy artifact and is ignored by git. It must be p
 
 If the climate COG moves, update `KOPPEN_COG_URL` in `src/features/climate-map/layers/KoppenTileLayer.ts`.
 
-### Regenerating the Koppen COG
+## Regenerate the Koppen COG from original dataset
 
 To rebuild the app-ready COG from the upstream dataset:
 
@@ -65,7 +65,9 @@ To rebuild the app-ready COG from the upstream dataset:
    scripts/package_koppen_tile.sh
    ```
 
-### Koppen Tile Scripts
+## Utility Bash script usages
+
+### 1. Unpacking raster from archive
 
 ```sh
 scripts/unpack_koppen_tile.sh [archive_path]
@@ -76,6 +78,8 @@ Extracts the packaged COG archive into `public/`. `archive_path` defaults to:
 ```text
 data/tiles/koppen/1991_2020/koppen_geiger_0p00833333_rgba_cog.tif.tar.gz
 ```
+
+### 2. Generate raster from original dataset
 
 ```sh
 scripts/preprocess_geotiff.sh [source_tif] [output_tif]
@@ -93,6 +97,8 @@ koppen_geiger_tif/1991_2020/koppen_geiger_0p00833333.tif
 public/tiles/koppen/1991_2020/koppen_geiger_0p00833333_rgba_cog.tif
 ```
 
+### 3. Pack the generated raster
+
 ```sh
 scripts/package_koppen_tile.sh [tile_path]
 ```
@@ -105,7 +111,7 @@ public/tiles/koppen/1991_2020/koppen_geiger_0p00833333_rgba_cog.tif
 
 The output archive path is derived as `data/<tile_path-without-public-prefix>.tar.gz`.
 
-### Koppen Dataset License And Citation
+## Koppen Dataset License And Citation
 
 [The Köppen-Geiger dataset](https://www.gloh2o.org/koppen/) is licensed under [Creative Commons Attribution 4.0 International (CC BY 4.0)](https://creativecommons.org/licenses/by-nc/4.0/). This repository's license does not apply to the upstream GloH2O dataset or files derived from it, including the generated COG and packaged archive.
 
