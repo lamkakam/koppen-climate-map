@@ -1,6 +1,6 @@
 # koppen-climate-map
 
-Client-only React, TypeScript, and Vite app for the Köppen climate map.
+Client-side web app for the Köppen climate map for 1991-2020.
 
 See [docs/development.md](docs/development.md) for local development commands.
 
