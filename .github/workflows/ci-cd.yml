@@ -3,8 +3,6 @@ name: CI/CD
 on:
   pull_request:
     branches: [main]
-    paths-ignore:
-      - '**/*.md'
   push:
     branches: [main]
     paths-ignore:
@@ -21,37 +19,64 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Detect markdown-only PR
+        id: changes
+        if: github.event_name == 'pull_request'
+        shell: bash
+        run: |
+          changed_files="$(git diff --name-only "${{ github.event.pull_request.base.sha }}" "${{ github.event.pull_request.head.sha }}")"
+          if [ -n "$changed_files" ] && ! grep -vqE '\.md$' <<< "$changed_files"; then
+            echo "markdown_only=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "markdown_only=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Skip full CI
+        if: steps.changes.outputs.markdown_only == 'true'
+        run: echo "Markdown-only change detected; full CI/CD workflow skipped."
 
       - name: Setup Node
+        if: steps.changes.outputs.markdown_only != 'true'
         uses: actions/setup-node@v6
         with:
           node-version: 24
           cache: npm
 
       - name: Install dependencies
+        if: steps.changes.outputs.markdown_only != 'true'
         run: npm ci
 
       - name: Typecheck
+        if: steps.changes.outputs.markdown_only != 'true'
         run: npm run typecheck
 
       - name: Lint
+        if: steps.changes.outputs.markdown_only != 'true'
         run: npm run lint
 
       - name: Unit tests
+        if: steps.changes.outputs.markdown_only != 'true'
         run: npm test
 
       - name: Restore Koppen climate tile
+        if: steps.changes.outputs.markdown_only != 'true'
         run: scripts/unpack_koppen_tile.sh
 
       - name: Build
+        if: steps.changes.outputs.markdown_only != 'true'
         run: npm run build
         env:
           GITHUB_PAGES: ${{ github.event_name == 'push' && 'true' || 'false' }}
 
       - name: Install Playwright browsers
+        if: steps.changes.outputs.markdown_only != 'true'
         run: npx playwright install --with-deps chromium
 
       - name: E2E tests
+        if: steps.changes.outputs.markdown_only != 'true'
         run: npm run test:e2e
 
       - name: Upload Pages artifact

@@ -2,6 +2,8 @@
 
 Client-side web app for an interactive Köppen climate map for the 1-km resolution Köppen-Geiger dataset (currently for the period of 1991-2020).
 
+Live Demo: [https://lamkakam.github.io/koppen-climate-map/](https://lamkakam.github.io/koppen-climate-map/)
+
 See [docs/development.md](docs/development.md) for local development commands.
 
 ## Features
