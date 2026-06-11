@@ -44,6 +44,22 @@ function isMissingTileBlockError(error: unknown) {
   return error instanceof TypeError && error.message.includes("reading 'buffer'");
 }
 
+async function readKoppenRasters(
+  tiff: GeoTIFF,
+  readBounds: readonly [number, number, number, number],
+  signal?: AbortSignal,
+) {
+  return tiff.readRasters({
+    bbox: [...readBounds],
+    width: 256,
+    height: 256,
+    samples: [0, 1, 2, 3],
+    interleave: false,
+    resampleMethod: 'nearest',
+    signal,
+  });
+}
+
 export function createKoppenImageDataFromRgba(rgbaBands: RgbaBands, width: number, height: number) {
   const [red, , , alpha] = rgbaBands;
   const data = new Uint8ClampedArray(width * height * 4);
@@ -93,21 +109,13 @@ export async function readKoppenCogTile(
   let rasters: ReadRasterResult;
 
   try {
-    rasters = await tiff.readRasters({
-      bbox: [...readBounds],
-      width: 256,
-      height: 256,
-      samples: [0, 1, 2, 3],
-      interleave: false,
-      resampleMethod: 'nearest',
-      signal,
-    });
+    rasters = await readKoppenRasters(tiff, readBounds, signal);
   } catch (error) {
-    if (signal?.aborted === true || isMissingTileBlockError(error)) {
-      return createTransparentKoppenImageData(256, 256);
+    if (signal?.aborted !== true && isMissingTileBlockError(error)) {
+      rasters = await readKoppenRasters(tiff, readBounds, signal);
+    } else {
+      throw error;
     }
-
-    throw error;
   }
 
   if (!isRgbaBands(rasters)) {
