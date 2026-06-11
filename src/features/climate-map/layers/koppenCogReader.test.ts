@@ -1,4 +1,5 @@
 import { fromUrl } from 'geotiff';
+import type { GeoTIFF } from 'geotiff';
 
 import {
   createKoppenImageDataFromRgba,
@@ -22,6 +23,10 @@ class TestImageData {
 }
 
 const fromUrlMock = vi.mocked(fromUrl);
+
+function createGeoTiffTestDouble(readRasters: GeoTIFF['readRasters']) {
+  return { readRasters } as GeoTIFF;
+}
 
 function createRasterResult() {
   return Object.assign([
@@ -118,7 +123,7 @@ describe('koppenCogReader', () => {
     const abortError = new DOMException('The operation was aborted.', 'AbortError');
     const readRasters = vi.fn().mockRejectedValue(abortError);
 
-    fromUrlMock.mockResolvedValue({ readRasters });
+    fromUrlMock.mockResolvedValue(createGeoTiffTestDouble(readRasters));
 
     await expect(readKoppenCogTile('aborted.tif', {
       west: 0,
@@ -135,7 +140,7 @@ describe('koppenCogReader', () => {
       .mockRejectedValueOnce(new TypeError("Cannot read properties of undefined (reading 'buffer')"))
       .mockResolvedValueOnce(createRasterResult());
 
-    fromUrlMock.mockResolvedValue({ readRasters });
+    fromUrlMock.mockResolvedValue(createGeoTiffTestDouble(readRasters));
 
     const imageData = await readKoppenCogTile('retry.tif', {
       west: 0,
