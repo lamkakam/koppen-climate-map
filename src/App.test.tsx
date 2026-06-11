@@ -9,6 +9,7 @@ import type { ReactNode } from 'react';
 import { vi } from 'vitest';
 
 import { App } from './App';
+import { KOPPEN_COG_URL } from './features/climate-map/layers/KoppenTileLayer';
 
 type TileLayerProps = {
   readonly id?: string;
@@ -141,7 +142,7 @@ describe('App', () => {
     });
     expect(tileLayerProps[1]).toMatchObject({
       id: 'koppen-climate-tiles',
-      data: '/tiles/koppen/1991_2020/koppen_geiger_0p00833333_rgba_cog.tif',
+      data: KOPPEN_COG_URL,
       opacity: 0.75,
     });
   });
@@ -322,14 +323,14 @@ describe('App', () => {
       tileLayerProps
         .map((props) => props.data)
         .filter((tileUrl) => (
-          tileUrl === '/tiles/koppen/1991_2020/koppen_geiger_0p00833333_rgba_cog.tif'
+          tileUrl === KOPPEN_COG_URL
         )),
     ).toHaveLength(2);
     expect(
       tileLayerProps
         .filter((props) => props.id === 'koppen-climate-tiles')
         .every((props) => (
-          props.data === '/tiles/koppen/1991_2020/koppen_geiger_0p00833333_rgba_cog.tif'
+          props.data === KOPPEN_COG_URL
         )),
     ).toBe(true);
     expect(new Set(tileLayerProps.map((props) => props.data))).toEqual(new Set(initialTileUrls));
@@ -357,7 +358,7 @@ describe('App', () => {
       opacity: 0.4,
     });
     expect(tileLayerProps.at(-1)).toMatchObject({
-      data: '/tiles/koppen/1991_2020/koppen_geiger_0p00833333_rgba_cog.tif',
+      data: KOPPEN_COG_URL,
       opacity: 0.2,
     });
     expect(new Set(tileLayerProps.map((props) => props.data))).toEqual(new Set(initialTileUrls));
