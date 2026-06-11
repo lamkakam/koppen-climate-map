@@ -4,11 +4,11 @@ test('loads the climate map workspace', async ({ page }) => {
   await page.goto('/');
   await page.getByRole('button', { name: /acknowledge data license notice/i }).click();
 
-  await expect(page.getByRole('region', { name: /koppen climate raster map/i })).toBeVisible();
+  await expect(page.getByRole('region', { name: /köppen climate raster map/i })).toBeVisible();
   await expect(page.getByRole('complementary', { name: /layer controls/i })).toBeVisible();
-  await expect(page.getByRole('group', { name: /koppen climate classes/i })).toBeVisible();
+  await expect(page.getByRole('group', { name: /köppen climate classes/i })).toBeVisible();
   await expect(page.getByRole('slider', { name: /map opacity/i })).toHaveValue('100');
-  await expect(page.getByRole('slider', { name: /koppen opacity/i })).toHaveValue('75');
+  await expect(page.getByRole('slider', { name: /köppen opacity/i })).toHaveValue('75');
   await expect(page.getByRole('link', { name: /openstreetmap contributors/i })).toHaveAttribute(
     'href',
     'https://www.openstreetmap.org/copyright',
@@ -17,8 +17,8 @@ test('loads the climate map workspace', async ({ page }) => {
 
   await page.getByRole('slider', { name: /map opacity/i }).fill('45');
   await expect(page.getByRole('slider', { name: /map opacity/i })).toHaveValue('45');
-  await page.getByRole('slider', { name: /koppen opacity/i }).fill('55');
-  await expect(page.getByRole('slider', { name: /koppen opacity/i })).toHaveValue('55');
+  await page.getByRole('slider', { name: /köppen opacity/i }).fill('55');
+  await expect(page.getByRole('slider', { name: /köppen opacity/i })).toHaveValue('55');
 
   await page.getByRole('button', { name: /hide all/i }).click();
   await expect(page.getByRole('checkbox', { name: /Af tropical rainforest/i })).not.toBeChecked();
@@ -48,7 +48,7 @@ test('keeps desktop layer controls expanded in the upper-left with attribution b
   const collapseButton = page.getByRole('button', { name: /collapse layer controls/i });
 
   await expect(controls).toBeVisible();
-  await expect(page.getByRole('group', { name: /koppen climate classes/i })).toBeVisible();
+  await expect(page.getByRole('group', { name: /köppen climate classes/i })).toBeVisible();
   await expect(attribution).toHaveAttribute('href', 'https://www.openstreetmap.org/copyright');
   await expect(collapseButton.getByTestId('desktop-layer-controls-chevron')).toHaveClass(
     /-rotate-\[135deg\]/,
@@ -120,11 +120,11 @@ test('collapses and reopens mobile layer controls from the bottom handle', async
   expect(attributionBox?.x).toBeGreaterThan((buttonBox?.x ?? 0) + (buttonBox?.width ?? 0));
 
   await collapseButton.click();
-  await expect(page.getByRole('group', { name: /koppen climate classes/i })).toBeHidden();
+  await expect(page.getByRole('group', { name: /köppen climate classes/i })).toBeHidden();
   await expect(attribution).toBeVisible();
 
   await page.getByRole('button', { name: /expand layer controls/i }).click();
-  await expect(page.getByRole('group', { name: /koppen climate classes/i })).toBeVisible();
+  await expect(page.getByRole('group', { name: /köppen climate classes/i })).toBeVisible();
 });
 
 test('does not show a mobile class tooltip after long press', async ({ page }) => {

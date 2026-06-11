@@ -48,7 +48,7 @@ export function createOpenStreetMapTileLayer({ opacity }: OpenStreetMapTileLayer
       const { bbox } = props.tile;
 
       if (!isGeoBoundingBox(bbox)) {
-        return undefined;
+        return null;
       }
 
       return new BitmapLayer({

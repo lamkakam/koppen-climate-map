@@ -1,32 +1,44 @@
 #!/usr/bin/env bash
+set -euo pipefail
+
+SOURCE_TIF="${1:-koppen_geiger_tif/1991_2020/koppen_geiger_0p00833333.tif}"
+OUTPUT_TIF="${2:-public/tiles/koppen/1991_2020/koppen_geiger_0p00833333_rgba_cog.tif}"
+
+WORK_DIR="$(mktemp -d)"
+trap 'rm -rf "${WORK_DIR}"' EXIT
+
+mkdir -p "$(dirname "${OUTPUT_TIF}")"
 
 gdal_calc.py \
-  -A "${1}" \
+  -A "${SOURCE_TIF}" \
   --A_band=1 \
   --calc="A" \
   --type=Byte \
   --NoDataValue=0 \
-  --outfile=koppen_ids_byte.tif
+  --outfile="${WORK_DIR}/koppen_class_byte.tif"
 
-# EPSG:3857 for Web Mercator projection
-# -r near for nearest neighbor resampling to preserve categorical data
-gdalwarp \
-  -t_srs EPSG:3857 \
-  -r near \
-  -ot Byte \
-  -dstnodata 0 \
-  koppen_ids_byte.tif \
-  koppen_ids_3857.tif
+gdal_calc.py \
+  -A "${SOURCE_TIF}" \
+  --A_band=1 \
+  --calc="255*(A>0)" \
+  --type=Byte \
+  --NoDataValue=0 \
+  --outfile="${WORK_DIR}/koppen_alpha_byte.tif"
 
-# -z 0-8 for zoom levels 0 to 8
-# --xyz for XYZ tile scheme (OSM Slippy Map tiles)
-# --tilesize=256 for 256x256 tiles
-gdal2tiles.py \
-  -z 0-8 \
-  -r near \
-  --xyz \
-  --tilesize=256 \
-  koppen_ids_3857.tif \
-  "public/tiles/koppen/${2}"
+gdalbuildvrt \
+  -separate \
+  "${WORK_DIR}/koppen_rgba.vrt" \
+  "${WORK_DIR}/koppen_class_byte.tif" \
+  "${WORK_DIR}/koppen_class_byte.tif" \
+  "${WORK_DIR}/koppen_class_byte.tif" \
+  "${WORK_DIR}/koppen_alpha_byte.tif"
 
-rm koppen_ids_byte.tif koppen_ids_3857.tif
+gdal_translate \
+  -of COG \
+  -colorinterp red,green,blue,alpha \
+  -co COMPRESS=DEFLATE \
+  -co BLOCKSIZE=256 \
+  -co RESAMPLING=NEAREST \
+  -co OVERVIEW_RESAMPLING=NEAREST \
+  "${WORK_DIR}/koppen_rgba.vrt" \
+  "${OUTPUT_TIF}"

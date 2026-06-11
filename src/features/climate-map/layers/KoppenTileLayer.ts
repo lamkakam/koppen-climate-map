@@ -3,9 +3,9 @@ import type { TileLayerProps } from '@deck.gl/geo-layers';
 import type { SamplerProps } from '@luma.gl/core';
 
 import { KoppenBitmapLayer } from './KoppenBitmapLayer';
-import { decodeKoppenPng } from './koppenPngDecoder';
+import { readKoppenCogTile } from './koppenCogReader';
 
-export const KOPPEN_TILE_URL = '/tiles/koppen/1991_2020/{z}/{x}/{y}.png';
+export const KOPPEN_COG_URL = '/tiles/koppen/1991_2020/koppen_geiger_0p00833333_rgba_cog.tif';
 export const KOPPEN_MIN_ZOOM = 0;
 export const KOPPEN_MAX_ZOOM = 8;
 
@@ -50,7 +50,7 @@ export function createKoppenTileLayer({ visibleClassIds, opacity }: KoppenTileLa
 
   return new TileLayer<TileImage>({
     id: 'koppen-climate-tiles',
-    data: KOPPEN_TILE_URL,
+    data: KOPPEN_COG_URL,
     minZoom: KOPPEN_MIN_ZOOM,
     maxZoom: KOPPEN_MAX_ZOOM,
     tileSize: 256,
@@ -60,20 +60,16 @@ export function createKoppenTileLayer({ visibleClassIds, opacity }: KoppenTileLa
       visibleClassIds: visibleClassKey,
       opacity,
     },
-    getTileData: async ({ url, signal }) => {
+    getTileData: async ({ url, signal, bbox }) => {
       if (url === undefined || url === null) {
-        throw new Error('Missing Koppen tile URL');
+        throw new Error('Missing Koppen COG URL');
       }
 
-      const response = await fetch(url, { signal });
-
-      if (!response.ok) {
-        throw new Error(`Failed to load Koppen tile ${url}: ${response.status}`);
+      if (!isGeoBoundingBox(bbox)) {
+        throw new Error('Missing Koppen tile bounds');
       }
 
-      const decodedTile = decodeKoppenPng(await response.arrayBuffer());
-
-      return new ImageData(decodedTile.data, decodedTile.width, decodedTile.height);
+      return readKoppenCogTile(url, bbox, signal);
     },
     renderSubLayers: (props) => {
       const { bbox } = props.tile;
@@ -91,6 +87,7 @@ export function createKoppenTileLayer({ visibleClassIds, opacity }: KoppenTileLa
         koppenOpacity: opacity,
         opacity: 1,
         pickable: false,
+        _imageCoordinateSystem: 'lnglat',
       });
     },
   } satisfies TileLayerProps<TileImage>);
