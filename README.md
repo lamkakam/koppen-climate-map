@@ -1,6 +1,6 @@
 # koppen-climate-map
 
-Client-side web app for the Köppen climate map for 1991-2020.
+Client-side web app for an interactive Köppen climate map for the 1-km resolution Köppen-Geiger dataset (currently for the period of 1991-2020).
 
 See [docs/development.md](docs/development.md) for local development commands.
 
