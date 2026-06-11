@@ -35,6 +35,9 @@ jobs:
       - name: Unit tests
         run: npm test
 
+      - name: Restore Koppen climate tile
+        run: scripts/unpack_koppen_tile.sh
+
       - name: Build
         run: npm run build
         env:
