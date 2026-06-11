@@ -1,47 +1,45 @@
-import { fixupConfigRules } from '@eslint/compat';
-import { FlatCompat } from '@eslint/eslintrc';
 import js from '@eslint/js';
+import importPlugin from 'eslint-plugin-import';
+import jsxA11y from 'eslint-plugin-jsx-a11y';
 import playwright from 'eslint-plugin-playwright';
-import vitest from 'eslint-plugin-vitest';
+import react from 'eslint-plugin-react';
+import reactHooks from 'eslint-plugin-react-hooks';
+import vitest from '@vitest/eslint-plugin';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
-
-const compat = new FlatCompat({
-  baseDirectory: import.meta.dirname,
-  recommendedConfig: js.configs.recommended,
-  allConfig: js.configs.all,
-});
-
-const isSupportedTypeScriptRule = (ruleName) => {
-  if (!ruleName.startsWith('@typescript-eslint/')) {
-    return true;
-  }
-
-  return ruleName.replace('@typescript-eslint/', '') in tseslint.plugin.rules;
-};
-
-const airbnbConfigs = fixupConfigRules(
-  compat.extends('airbnb', 'airbnb/hooks', 'airbnb-typescript'),
-).map((config) => ({
-  ...config,
-  rules: Object.fromEntries(
-    Object.entries(config.rules ?? {}).filter(([ruleName]) => isSupportedTypeScriptRule(ruleName)),
-  ),
-}));
-
-const disabledTypeScriptRules = Object.fromEntries(
-  Object.keys(tseslint.plugin.rules).map((ruleName) => [`@typescript-eslint/${ruleName}`, 'off']),
-);
 
 export default tseslint.config(
   {
     ignores: ['dist', 'coverage', 'node_modules', 'playwright-report', 'test-results'],
   },
   js.configs.recommended,
-  ...airbnbConfigs,
   {
-    files: ['**/*.{js,cjs,mjs}'],
-    rules: disabledTypeScriptRules,
+    plugins: {
+      import: importPlugin,
+    },
+  },
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      ...tseslint.configs.recommended,
+      react.configs.flat.recommended,
+      react.configs.flat['jsx-runtime'],
+      reactHooks.configs.flat.recommended,
+    ],
+    languageOptions: {
+      parserOptions: {
+        ...react.configs.flat.recommended.languageOptions.parserOptions,
+      },
+    },
+    plugins: {
+      import: importPlugin,
+      'jsx-a11y': jsxA11y,
+    },
+    rules: {
+      ...importPlugin.configs.recommended.rules,
+      ...importPlugin.configs.typescript.rules,
+      ...jsxA11y.configs.recommended.rules,
+    },
   },
   {
     files: ['**/*.{ts,tsx}'],
