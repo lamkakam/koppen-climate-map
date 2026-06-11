@@ -42,6 +42,41 @@ The COG is a generated local/deploy artifact and is ignored by git. It must be p
 
 If the climate COG moves, update `KOPPEN_COG_URL` in `src/features/climate-map/layers/KoppenTileLayer.ts`.
 
+## Development Setup
+
+Install dependencies from the lockfile:
+
+```sh
+npm ci
+```
+
+Run the Vite development server:
+
+```sh
+npm run dev
+```
+
+Build and preview the production app:
+
+```sh
+npm run build
+npm run preview
+```
+
+Check TypeScript and linting:
+
+```sh
+npm run typecheck
+npm run lint
+```
+
+Run the test suites:
+
+```sh
+npm test
+npm run test:e2e
+```
+
 ## Regenerate the Koppen COG from original dataset
 
 To rebuild the app-ready COG from the upstream dataset:
