@@ -26,12 +26,91 @@ At runtime Vite serves those files as:
 /tiles/koppen/1991_2020/koppen_geiger_0p00833333_rgba_cog.tif
 ```
 
-Generate it from the source raster with:
+Restore the app-ready COG from the packaged archive with:
 
 ```sh
-scripts/preprocess_geotiff.sh
+scripts/unpack_koppen_tile.sh
+```
+
+The tracked archive is:
+
+```text
+data/tiles/koppen/1991_2020/koppen_geiger_0p00833333_rgba_cog.tif.tar.gz
 ```
 
 The COG is a generated local/deploy artifact and is ignored by git. It must be present at the public path above before running or deploying the app. The COG stores the Koppen class ID in the red, green, and blue channels; alpha is 255 for classified pixels, and class ID `0` has alpha 0 for transparent no-data. Class coloring and filtering happen in the deck.gl bitmap fragment shader.
 
 If the climate COG moves, update `KOPPEN_COG_URL` in `src/features/climate-map/layers/KoppenTileLayer.ts`.
+
+### Regenerating the Koppen COG
+
+To rebuild the app-ready COG from the upstream dataset:
+
+1. Download the Koppen-Geiger V3 dataset from https://www.gloh2o.org/koppen/.
+2. Extract the source GeoTIFF so this default path exists:
+
+   ```text
+   koppen_geiger_tif/1991_2020/koppen_geiger_0p00833333.tif
+   ```
+
+3. Generate the RGBA COG:
+
+   ```sh
+   scripts/preprocess_geotiff.sh
+   ```
+
+4. Optionally refresh the packaged archive:
+
+   ```sh
+   scripts/package_koppen_tile.sh
+   ```
+
+### Koppen Tile Scripts
+
+```sh
+scripts/unpack_koppen_tile.sh [archive_path]
+```
+
+Extracts the packaged COG archive into `public/`. `archive_path` defaults to:
+
+```text
+data/tiles/koppen/1991_2020/koppen_geiger_0p00833333_rgba_cog.tif.tar.gz
+```
+
+```sh
+scripts/preprocess_geotiff.sh [source_tif] [output_tif]
+```
+
+Creates an RGBA Cloud-Optimized GeoTIFF from the source class GeoTIFF. `source_tif` defaults to:
+
+```text
+koppen_geiger_tif/1991_2020/koppen_geiger_0p00833333.tif
+```
+
+`output_tif` defaults to:
+
+```text
+public/tiles/koppen/1991_2020/koppen_geiger_0p00833333_rgba_cog.tif
+```
+
+```sh
+scripts/package_koppen_tile.sh [tile_path]
+```
+
+Packages the generated COG. `tile_path` defaults to:
+
+```text
+public/tiles/koppen/1991_2020/koppen_geiger_0p00833333_rgba_cog.tif
+```
+
+The output archive path is derived as `data/<tile_path-without-public-prefix>.tar.gz`.
+
+### Koppen Dataset License And Citation
+
+The GloH2O Köppen-Geiger maps are licensed under Creative Commons Attribution 4.0 International (CC BY 4.0), according to the upstream GloH2O Köppen-Geiger page: https://www.gloh2o.org/koppen/. This repository's license does not apply to the original GloH2O dataset or any files derived from it, including the generated COG and packaged archive.
+
+When using the maps, cite the upstream dataset:
+
+Beck, H.E., T.R. McVicar, N. Vergopolan, A. Berg, N.J. Lutsko, A. Dufour, Z. Zeng, X. Jiang, A.I.J.M. van Dijk, D.G. Miralles. "High-resolution (1 km) Köppen-Geiger maps for 1901-2099 based on constrained CMIP6 projections." Scientific Data 10, 724, doi:10.1038/s41597-023-02549-6 (2023).
+
+Nature citation page: https://doi.org/10.1038/s41597-023-02549-6
