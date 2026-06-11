@@ -5,7 +5,15 @@ import type { SamplerProps } from '@luma.gl/core';
 import { KoppenBitmapLayer } from './KoppenBitmapLayer';
 import { readKoppenCogTile } from './koppenCogReader';
 
-export const KOPPEN_COG_URL = '/tiles/koppen/1991_2020/koppen_geiger_0p00833333_rgba_cog.tif';
+const KOPPEN_COG_PATH = 'tiles/koppen/1991_2020/koppen_geiger_0p00833333_rgba_cog.tif';
+
+export function buildKoppenCogUrl(baseUrl: string) {
+  const normalizedBaseUrl = baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`;
+
+  return `${normalizedBaseUrl}${KOPPEN_COG_PATH}`;
+}
+
+export const KOPPEN_COG_URL = `${import.meta.env.BASE_URL}${KOPPEN_COG_PATH}`;
 export const KOPPEN_MIN_ZOOM = 0;
 export const KOPPEN_MAX_ZOOM = 8;
 

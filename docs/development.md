@@ -64,6 +64,12 @@ At runtime Vite serves those files as:
 /tiles/koppen/1991_2020/koppen_geiger_0p00833333_rgba_cog.tif
 ```
 
+For GitHub Pages builds, the runtime URL is prefixed with the Vite base path:
+
+```text
+/koppen-climate-map/tiles/koppen/1991_2020/koppen_geiger_0p00833333_rgba_cog.tif
+```
+
 Restore the app-ready COG from the packaged archive with:
 
 ```sh
@@ -78,7 +84,7 @@ data/tiles/koppen/1991_2020/koppen_geiger_0p00833333_rgba_cog.tif.tar.gz
 
 The COG is a generated local/deploy artifact and is ignored by git. It must be present at the public path above before running or deploying the app. The COG stores the Köppen class ID in the red, green, and blue channels; alpha is 255 for classified pixels, and class ID `0` has alpha 0 for transparent no-data. Class coloring and filtering happen in the deck.gl bitmap fragment shader. The app structure can accommodate data-era selection if additional eras are added later.
 
-If the climate COG moves, update `KOPPEN_COG_URL` in `src/features/climate-map/layers/KoppenTileLayer.ts`.
+CI restores the ignored COG from the tracked archive before `npm run build`, so the GitHub Pages artifact includes `dist/tiles/koppen/1991_2020/koppen_geiger_0p00833333_rgba_cog.tif`. If the climate COG moves, update `KOPPEN_COG_PATH` in `src/features/climate-map/layers/KoppenTileLayer.ts`.
 
 ## Regenerate the Köppen COG from original dataset
 
