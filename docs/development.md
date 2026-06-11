@@ -52,7 +52,7 @@ https://tile.openstreetmap.org/{z}/{x}/{y}.png
 
 OpenStreetMap attribution must remain visible in the map viewport and link to `https://www.openstreetmap.org/copyright`. Public tile usage must follow the OpenStreetMap tile policy: https://operations.osmfoundation.org/policies/tiles/
 
-The Koppen climate overlay reads viewport-sized windows from one generated Cloud-Optimized GeoTIFF for the 1991-2020 period:
+The Köppen climate overlay reads viewport-sized windows from one generated Cloud-Optimized GeoTIFF for the 1991-2020 period:
 
 ```text
 public/tiles/koppen/1991_2020/koppen_geiger_0p00833333_rgba_cog.tif
@@ -76,15 +76,15 @@ The tracked archive is:
 data/tiles/koppen/1991_2020/koppen_geiger_0p00833333_rgba_cog.tif.tar.gz
 ```
 
-The COG is a generated local/deploy artifact and is ignored by git. It must be present at the public path above before running or deploying the app. The COG stores the Koppen class ID in the red, green, and blue channels; alpha is 255 for classified pixels, and class ID `0` has alpha 0 for transparent no-data. Class coloring and filtering happen in the deck.gl bitmap fragment shader. The app structure can accommodate data-era selection if additional eras are added later.
+The COG is a generated local/deploy artifact and is ignored by git. It must be present at the public path above before running or deploying the app. The COG stores the Köppen class ID in the red, green, and blue channels; alpha is 255 for classified pixels, and class ID `0` has alpha 0 for transparent no-data. Class coloring and filtering happen in the deck.gl bitmap fragment shader. The app structure can accommodate data-era selection if additional eras are added later.
 
 If the climate COG moves, update `KOPPEN_COG_URL` in `src/features/climate-map/layers/KoppenTileLayer.ts`.
 
-## Regenerate the Koppen COG from original dataset
+## Regenerate the Köppen COG from original dataset
 
 To rebuild the app-ready COG from the upstream dataset:
 
-1. Download the Koppen-Geiger V3 dataset from https://www.gloh2o.org/koppen/.
+1. Download the Köppen-Geiger V3 dataset from https://www.gloh2o.org/koppen/.
 2. Extract the source GeoTIFF so this default path exists:
 
    ```text

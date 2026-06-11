@@ -1,10 +1,16 @@
 # koppen-climate-map
 
-Client-only React, TypeScript, and Vite app for the Koppen climate map.
+Client-only React, TypeScript, and Vite app for the Köppen climate map.
 
 See [docs/development.md](docs/development.md) for local development commands.
 
-## Koppen Dataset License And Citation
+## Features
+
+- Selectable Köppen climate classes.
+- 1 km resolution Köppen-Geiger dataset.
+- Client-only interactive map experience.
+
+## Köppen Dataset License And Citation
 
 [The Köppen-Geiger dataset](https://www.gloh2o.org/koppen/) is licensed under [Creative Commons Attribution 4.0 International (CC BY 4.0)](https://creativecommons.org/licenses/by-nc/4.0/). This repository's license does not apply to the upstream GloH2O dataset or files derived from it, including the generated COG and packaged archive.
 
