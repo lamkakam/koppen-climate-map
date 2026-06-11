@@ -1,6 +1,6 @@
 # koppen-climate-map
 
-Client-side web app for an interactive Köppen climate map for the 1-km resolution Köppen-Geiger dataset (currently for the period of 1991-2020).
+A frontend-only web app for an interactive Köppen climate map for the 1-km resolution Köppen-Geiger dataset (currently for the period of 1991-2020) integrated with OpenStreetMap tiles without a custom backend.
 
 Live Demo: [https://lamkakam.github.io/koppen-climate-map/](https://lamkakam.github.io/koppen-climate-map/)
 
@@ -10,7 +10,8 @@ See [docs/development.md](docs/development.md) for local development commands.
 
 - Selectable Köppen climate classes.
 - 1 km resolution Köppen-Geiger dataset.
-- Client-only interactive map experience.
+- OpenStreetMap map tiles.
+- Interactive map experience, requiring no backend because all functionality runs client-side in the browser.
 
 ## Köppen Dataset License And Citation
 
