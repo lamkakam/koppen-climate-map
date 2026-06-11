@@ -92,6 +92,7 @@ export default tseslint.config(
       'import/no-extraneous-dependencies': [
         'error',
         {
+          packageDir: import.meta.dirname,
           devDependencies: [
             '**/*.test.ts',
             '**/*.test.tsx',
@@ -159,6 +160,7 @@ export default tseslint.config(
       'import/no-extraneous-dependencies': [
         'error',
         {
+          packageDir: import.meta.dirname,
           devDependencies: true,
         },
       ],
